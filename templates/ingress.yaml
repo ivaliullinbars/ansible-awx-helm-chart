@@ -1,29 +1,29 @@
 {{- if .Values.ingress.enabled -}}
-{{- $serviceName := include "awx-web-task.fullname" . -}}
-{{- $servicePort := .Values.service.externalPort -}}
+{{- $fullName := include "ansible-awx.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ template "awx-web-task.fullname" . }}
+  name: {{ $fullName }}
   labels:
-    app: {{ template "awx-web-task.name" . }}
+    app: {{ include "ansible-awx.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{- with .Values.ingress.annotations }}
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
-      {{ $key }}: {{ $value | quote }}
-    {{- end }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   rules:
     {{- range $host := .Values.ingress.hosts }}
     - host: {{ $host }}
       http:
         paths:
-          - path: /
+          - path: {{ $ingressPath }}
             backend:
-              serviceName: {{ $serviceName }}
-              servicePort: {{ $servicePort }}
+              serviceName: {{ $fullName }}
+              servicePort: 80
     {{- end -}}
   {{- if .Values.ingress.tls }}
   tls:

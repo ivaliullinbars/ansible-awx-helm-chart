@@ -1,0 +1,135 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "ansible-awx.fullname" . }}
+  labels:
+    app: {{ template "ansible-awx.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "ansible-awx.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "ansible-awx.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      securityContext:
+        runAsUser: 0
+        fsGroup: 0
+      containers:
+        - name: "{{ .Chart.Name }}-web"
+          image: "{{ .Values.awx_web.image.repository }}:{{ .Values.awx_web.image.tag }}"
+          imagePullPolicy: {{ .Values.awx_web.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8052
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 8052
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 8052
+          env:
+            - name: DATABASE_NAME
+              value: {{ template "ansible-awx.postgresql.database" . }}
+            - name: DATABASE_USER
+              value: {{ template "ansible-awx.postgresql.username" . }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "ansible-awx.postgresql.fullname" . }}
+                  key: postgresql-password
+            - name: DATABASE_HOST
+              value: {{ template "ansible-awx.postgresql.fullname" . }}
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: RABBITMQ_VHOST
+              value: {{ template "ansible-awx.rabbitmq.vhost" . }}
+            - name: RABBITMQ_USER
+              value: {{ template "ansible-awx.rabbitmq.username" . }}
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "ansible-awx.rabbitmq.fullname" . }}
+                  key: rabbitmq-password
+            - name: RABBITMQ_HOST
+              value: {{ template "ansible-awx.rabbitmq.fullname" . }}
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: MEMCACHED_HOST
+              value: {{ template "ansible-awx.memcached.fullname" . }}
+            - name: MEMCACHED_PORT
+              value: "11211"
+            - name: AWX_ADMIN_USER
+              value: {{ .Values.adminUser }}
+            - name: AWX_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "ansible-awx.fullname" . }}
+                  key: awx-admin-password
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "ansible-awx.fullname" . }}
+                  key: awx-secretkey
+        - name: "{{ .Chart.Name }}-task"
+          image: "{{ .Values.awx_task.image.repository }}:{{ .Values.awx_task.image.tag }}"
+          imagePullPolicy: {{ .Values.awx_task.image.pullPolicy }}
+          env:
+            - name: DATABASE_NAME
+              value: {{ template "ansible-awx.postgresql.database" . }}
+            - name: DATABASE_USER
+              value: {{ template "ansible-awx.postgresql.username" . }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "ansible-awx.postgresql.fullname" . }}
+                  key: postgresql-password
+            - name: DATABASE_HOST
+              value: {{ template "ansible-awx.postgresql.fullname" . }}
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: RABBITMQ_VHOST
+              value: {{ template "ansible-awx.rabbitmq.vhost" . }}
+            - name: RABBITMQ_USER
+              value: {{ template "ansible-awx.rabbitmq.username" . }}
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "ansible-awx.rabbitmq.fullname" . }}
+                  key: rabbitmq-password
+            - name: RABBITMQ_HOST
+              value: {{ template "ansible-awx.rabbitmq.fullname" . }}
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: MEMCACHED_HOST
+              value: {{ template "ansible-awx.memcached.fullname" . }}
+            - name: MEMCACHED_PORT
+              value: "11211"
+            - name: AWX_ADMIN_USER
+              value: {{ .Values.adminUser }}
+            - name: AWX_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "ansible-awx.fullname" . }}
+                  key: awx-admin-password
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "ansible-awx.fullname" . }}
+                  key: awx-secretkey
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}

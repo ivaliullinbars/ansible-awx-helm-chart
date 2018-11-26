@@ -1,0 +1,40 @@
+{{/* ######### PostgreSQL related templates */}}                    
+ 
+{{/*
+Return rabbitmq service name
+*/}}
+{{- define "ansible-awx.rabbitmq.fullname" -}}
+{{- printf "%s-rabbitmq" .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the rabbitmq username
+*/}}
+{{- define "ansible-awx.rabbitmq.username" -}}
+{{- if .Values.rabbitmq.username -}}
+{{- .Values.rabbitmq.username -}}
+{{- else -}}
+{{- printf "guest" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the rabbitmq password
+*/}}
+{{- define "ansible-awx.rabbitmq.password" -}}
+{{- if .Values.rabbitmq.password -}}
+{{- .Values.rabbitmq.password -}}
+{{- else -}}
+{{- printf "guest" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the rabbitmq vhost
+*/}}
+{{- define "ansible-awx.rabbitmq.vhost" -}}
+{{- if .Values.rabbitmq.vhost -}}
+{{- .Values.rabbitmq.vhost -}}
+{{- end -}}
+{{- printf "/" -}}
+{{- end -}}

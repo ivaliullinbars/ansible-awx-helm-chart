@@ -1,0 +1,11 @@
+---
+dependencies:
+  - name: postgresql
+    repository: https://kubernetes-charts.storage.googleapis.com
+    version: 2.2.4
+  - name: rabbitmq
+    repository: https://kubernetes-charts.storage.googleapis.com
+    version: 3.6.3
+  - name: memcached
+    repository: https://kubernetes-charts.storage.googleapis.com
+    version: 2.3.1

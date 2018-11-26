@@ -1,0 +1,8 @@
+{{/* ######### PostgreSQL related templates */}}                    
+ 
+{{/*
+Return memcached service name
+*/}}
+{{- define "ansible-awx.memcached.fullname" -}}
+{{- printf "%s-memcached" .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

@@ -1,0 +1,30 @@
+{{/* ######### PostgreSQL related templates */}}                    
+ 
+{{/*
+Return postgresql service name
+*/}}
+{{- define "ansible-awx.postgresql.fullname" -}}
+{{- printf "%s-postgresql" .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the postgresql username
+*/}}
+{{- define "ansible-awx.postgresql.username" -}}
+{{- if .Values.postgresql.postgresqlUsername -}}
+{{- .Values.postgresql.postgresqlUsername -}}
+{{- else -}}
+{{- printf "postgres" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the postgresql database
+*/}}
+{{- define "ansible-awx.postgresql.database" -}}
+{{/*- if .Values.postgresql.postgresqlDatabase -}}
+{{- .Values.postgresql.postgresqlDatabase -}}
+{{- end -*/}}
+{{- required "postgresql.postgresqlDatabase should be specified" .Values.postgresql.postgresqlDatabase -}}
+{{/*- .Values.postgresql.postgresqlDatabase -*/}}
+{{- end -}}
