@@ -5,14 +5,14 @@ replicaCount: 1
 awx_web:
   image:
     repository: ansible/awx_web
-    tag: latest
-    pullPolicy: Always
+    tag: 2.1.0
+    pullPolicy: IfNotPresent
 
 awx_task:
   image:
     repository: ansible/awx_task
-    tag: latest
-    pullPolicy: Always
+    tag: 2.1.0
+    pullPolicy: IfNotPresent
 service:
   name: nginx
   type: ClusterIP

@@ -36,5 +36,5 @@ Return the rabbitmq vhost
 {{- if .Values.rabbitmq.vhost -}}
 {{- .Values.rabbitmq.vhost -}}
 {{- end -}}
-{{- printf "/" -}}
+{{- printf "" -}}
 {{- end -}}
